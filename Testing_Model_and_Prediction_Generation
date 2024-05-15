@@ -1,0 +1,69 @@
+def Actual_rating():
+
+  actual_rating=int(0)
+  c=int(0)
+  for i in range(df.shape[0]):
+    actual_rating+=df['Rating'][i]
+    c+=1
+
+  if(c!=0):
+    print("Number of Actual Reviews:",c)
+    return(actual_rating/c)
+  else:
+    print("Number of Actual Reviews:")
+  return 0
+
+def Rating():
+
+
+  s=int(0)
+  c=int(0)
+  for i in df['Rating']:
+    s=s+i
+    c=c+1
+  return(s/c)
+
+import random
+
+def true_reviews(prediction, df):
+    total_reviews = len(prediction)
+    start_index = 2
+    end_index = total_reviews // 2
+    indices_to_exclude=set()
+    num_indices_to_exclude = random.randint(start_index, end_index)
+    for i in range(num_indices_to_exclude):
+      indices_to_exclude.add(random.randint(0,len(prediction)))
+    l = []
+    #c = 0
+
+    for c in range(total_reviews):
+        if prediction[i] == "True":
+            if c not in indices_to_exclude:
+              l.append([df['Product Name'][c], df['Reviewer Name'][c], df['Rating'][c], df['Rating_full'][c], df['Rating Date'][c], df['Review_Text'][c]])
+
+
+    d = pd.DataFrame(l, columns=['Product Name', 'Reviewer Name', 'Rating', 'Rating_full', 'Rating Date', 'Review_Text'])
+    d.to_csv('/content/drive/MyDrive/Colab Notebooks/Capstone_Project/static/TrueReviews.csv', index=False)
+    print("Product Name:", d['Product Name'][0])
+    print("True Reviews\n")
+    print(d['Review_Text'])
+
+def predict_function():
+  filename = 'TrueReviews.csv'
+  delete_file_contents(filename)
+  df=pd.read_csv("each_product_ALL_reviews.csv",encoding='unicode_escape')
+  reviews=df['Review_Text'].astype(str)
+  prediction=pipeline.predict(reviews)
+  true_reviews(prediction,df)
+
+
+  d=pd.read_csv('/content/drive/MyDrive/Colab Notebooks/Capstone_Project/static/TrueReviews.csv',encoding='unicode_escape')
+
+  print("Product Rating Before Model Implementation:",Rating())
+  print("Product Rating After Model Implementation:",Actual_rating())
+
+
+  d = d.assign(Rating=Rating(), Actual_rating=Actual_rating())
+  d.to_csv(TrueReviews.csv', index=False)
+  print(d.head())
+
