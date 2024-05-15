@@ -1,0 +1,35 @@
+Application of SVM-LR Model
+
+X_train, X_test, y_train, y_test = train_test_split(df['body'],df['verified'],test_size=0.35)
+
+log_reg_model = LogisticRegression()
+svm_classifier = SVC(kernel='linear', probability=True)
+voting_classifier = VotingClassifier(estimators=[('lr', log_reg_model), ('svm', svm_classifier)], voting='soft')
+
+
+Generating Pipeline of SVM and LR Combination
+
+pipeline = Pipeline([
+    ('bow',CountVectorizer(analyzer=text_process)),
+    ('tfidf',TfidfTransformer()),
+    ('classifier',voting_classifier)
+])
+
+X_train=X_train.astype(str)
+X_test=X_test.astype(str)
+y_train=y_train.astype(str)
+y_test=y_test.astype(str)
+
+
+pipeline.fit(X_train,y_train)
+
+svc_pred = pipeline.predict(X_test)
+svc_pred
+
+Generating Accuracy Report
+
+print('Classification Report:',classification_report(y_test,svc_pred))
+print('Confusion Matrix:',confusion_matrix(y_test,svc_pred))
+print('Accuracy Score:',accuracy_score(y_test,svc_pred))
+print('Model Prediction Accuracy:',str(np.round(accuracy_score(y_test,svc_pred)*100,2)) + '%')
+
